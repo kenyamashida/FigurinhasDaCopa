@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ActivityIndicator, Share, Alert, TextInput } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import catalogo from '../../../data/catalogo-figurinhas.json';

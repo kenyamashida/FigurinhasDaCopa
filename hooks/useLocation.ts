@@ -8,9 +8,10 @@ export function useLocation() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Solicitando permissão e pegando a localização atual
   useEffect(() => {
-    (async () => {
+    let subscription: Location.LocationSubscription | null = null;
+
+    const startWatching = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permissão para acessar a localização foi negada.');
@@ -18,7 +19,7 @@ export function useLocation() {
       }
 
       // Inicia o rastreamento em background/foreground contínuo
-      const subscription = await Location.watchPositionAsync(
+      subscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Balanced,
           distanceInterval: 50, // Atualiza a cada 50 metros
@@ -40,11 +41,15 @@ export function useLocation() {
           }
         }
       );
+    };
 
-      return () => {
+    startWatching();
+
+    return () => {
+      if (subscription) {
         subscription.remove();
-      };
-    })();
+      }
+    };
   }, []);
 
   // Fetching de usuários próximos num raio (ex: 5km = 5000 metros)

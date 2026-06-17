@@ -38,7 +38,7 @@ export function useMatches() {
     },
     onSuccess: () => {
       Alert.alert("Sucesso!", "Solicitação de troca enviada!");
-      queryClient.invalidateQueries({ queryKey: ['active_trades'] });
+      queryClient.invalidateQueries({ queryKey: ['active_matches'] });
     },
     onError: (err: any) => {
       Alert.alert("Aviso", "Você já enviou uma solicitação para este colecionador ou houve um erro.");

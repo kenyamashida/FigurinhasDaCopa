@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useLocation } from '../../../hooks/useLocation';
 import { useTheme } from '../../../hooks/useTheme';
 
 export default function MapaScreen() {
+  const router = useRouter();
   const { location, errorMsg, nearbyUsers, isLoadingNearby, tradePoints } = useLocation();
   const { colors } = useTheme();
 
@@ -64,7 +66,7 @@ export default function MapaScreen() {
             }}
             pinColor={colors.secondary}
           >
-            <Callout>
+            <Callout onPress={() => router.push('/(tabs)/match')}>
               <View style={styles.calloutContainer}>
                 <Text style={[styles.calloutTitle, { color: colors.text }]}>{user.nome}</Text>
                 <Text style={[styles.calloutSubtitle, { color: colors.textSecondary }]}>

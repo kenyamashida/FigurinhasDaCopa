@@ -42,7 +42,8 @@ export default function ChatListScreen() {
         <Text style={[styles.userName, { color: colors.text }]}>{item.parceiro.nome}</Text>
         <Text style={[styles.previewMessage, { color: colors.textSecondary }]}>Toque para combinar o encontro...</Text>
       </View>
-      <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]} />
+      {/* TODO: Implementar lógica real de mensagens não lidas */}
+      {/* <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]} /> */}
     </TouchableOpacity>
   );
 

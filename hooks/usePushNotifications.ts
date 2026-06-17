@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
+import Constants from 'expo-constants';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -78,7 +79,7 @@ async function registerForPushNotificationsAsync() {
     }
     token = (
       await Notifications.getExpoPushTokenAsync({
-        projectId: 'your-project-id', // Num app real, puxar do app.config.ts
+        projectId: Constants.expoConfig?.extra?.eas?.projectId || 'your-project-id',
       })
     ).data;
   } else {

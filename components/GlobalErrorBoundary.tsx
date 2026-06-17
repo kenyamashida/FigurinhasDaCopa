@@ -12,7 +12,7 @@ export function ErrorBoundary({ error, retry }: { error: Error; retry: () => voi
       <Text style={styles.icon}>⚠️</Text>
       <Text style={[styles.title, { color: colors.text }]}>Ops! Algo deu errado.</Text>
       <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-        Encontramos um erro inesperado. Nossa equipe já foi notificada (mentira, foi não).
+        Encontramos um erro inesperado. Por favor, tente novamente.
       </Text>
       <View style={[styles.errorBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <Text style={[styles.errorText, { color: colors.error }]}>{error.message}</Text>

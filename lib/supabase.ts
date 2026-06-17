@@ -19,6 +19,10 @@ const ExpoSecureStoreAdapter = {
 const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl as string;
 const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey as string;
 
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn("⚠️ IMPORTANTE: Variáveis do Supabase não encontradas! O app não conseguirá se conectar ao banco. Verifique o .env");
+}
+
 // Fallback to localStorage on web/ssr
 const isWeb = Platform.OS === 'web';
 

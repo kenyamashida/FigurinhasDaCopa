@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
 import { Link, router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
+import { Platform } from 'react-native';
+import * as Linking from 'expo-linking';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -18,6 +20,21 @@ export default function LoginScreen() {
     if (error) Alert.alert('Erro ao entrar', error.message);
     else router.replace('/(tabs)/album');
     setLoading(false);
+  }
+
+  async function signInWithGoogle() {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: Platform.OS === 'web' ? window.location.origin : Linking.createURL('/'),
+      },
+    });
+
+    if (error) {
+      Alert.alert('Erro ao entrar com Google', error.message);
+      setLoading(false);
+    }
   }
 
   return (
@@ -72,7 +89,8 @@ export default function LoginScreen() {
 
         <TouchableOpacity 
           style={styles.googleButton} 
-          onPress={() => Alert.alert('Aviso', 'Login com Google requer configuração de chaves OAuth no Supabase e Google Cloud. Será configurado em breve!')}
+          onPress={signInWithGoogle}
+          disabled={loading}
         >
           <Text style={styles.googleButtonText}>Entrar com Google</Text>
         </TouchableOpacity>

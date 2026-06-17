@@ -1,68 +1,97 @@
-import { SymbolView } from 'expo-symbols';
-import { Link, Tabs } from 'expo-router';
-import { Platform, Pressable } from 'react-native';
-
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { Tabs } from 'expo-router';
+import { View, Text } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { colors } = useTheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.secondary, // Azul escuro
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+        tabBarActiveTintColor: colors.tabIconSelected, // Vermelho Copa
+        tabBarInactiveTintColor: colors.tabIconDefault,
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          borderTopWidth: 1,
+        },
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name="album/index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable style={{ marginRight: 15 }}>
-                {({ pressed }) => (
-                  <SymbolView
-                    name={{ ios: 'info.circle', android: 'info', web: 'info' }}
-                    size={25}
-                    tintColor={Colors[colorScheme].text}
-                    style={{ opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          title: 'Meu Álbum',
+          tabBarLabel: 'Álbum',
+          tabBarIcon: ({ color, size }) => <Ionicons name="albums-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="mapa/index"
+        options={{
+          title: 'Mapa de Trocas',
+          tabBarLabel: 'Mapa',
+          tabBarIcon: ({ color, size }) => <Ionicons name="map-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="match/index"
+        options={{
+          title: 'Trocas Perfeitas',
+          tabBarLabel: 'Match',
+          tabBarIcon: ({ color, size }) => <MaterialCommunityIcons name="swap-horizontal-circle-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="ranking/index"
+        options={{
+          title: 'Ranking',
+          tabBarLabel: 'Ranking',
+          tabBarIcon: ({ color, size }) => <Ionicons name="trophy-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="chat/index"
+        options={{
+          title: 'Mensagens',
+          tabBarLabel: 'Chat',
+          tabBarIcon: ({ color, size }) => <Ionicons name="chatbubbles-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="perfil/index"
+        options={{
+          title: 'Meu Perfil',
+          tabBarLabel: 'Perfil',
+          tabBarIcon: ({ color, size }) => <Ionicons name="person-circle-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="album/scanner"
+        options={{
+          href: null,
+          title: 'Escanear Figurinha',
+        }}
+      />
+      <Tabs.Screen
+        name="chat/[matchId]"
+        options={{
+          href: null,
+          title: 'Chat',
         }}
       />
       <Tabs.Screen
         name="two"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
+          href: null,
         }}
       />
     </Tabs>

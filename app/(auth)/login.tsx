@@ -41,7 +41,9 @@ export default function LoginScreen() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: Platform.OS === 'web' ? window.location.origin : Linking.createURL('/'),
+        redirectTo: Platform.OS === 'web' 
+          ? `${window.location.origin}/album` 
+          : Linking.createURL('/album'),
       },
     });
 

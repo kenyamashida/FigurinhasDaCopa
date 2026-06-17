@@ -1,22 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 
-export function useRaridade(codigo: string | undefined) {
+export function useRaridadeDinamica() {
   return useQuery({
-    queryKey: ['raridade', codigo],
+    queryKey: ['raridade-ranking'],
     queryFn: async () => {
-      if (!codigo) return null;
-      const { data, error } = await supabase
-        .from('v_raridade_figurinhas')
-        .select('*')
-        .eq('codigo', codigo)
-        .single();
-        
-      if (error && error.code !== 'PGRST116') {
-        console.error("Erro ao buscar raridade:", error);
-      }
-      return data;
+      const { data, error } = await supabase.rpc('get_raridade_ranking');
+      if (error) throw error;
+      return data as { codigo_figurinha: string; total_donos: number }[];
     },
-    enabled: !!codigo,
+    staleTime: 1000 * 60 * 5, // Cache por 5 minutos
   });
 }

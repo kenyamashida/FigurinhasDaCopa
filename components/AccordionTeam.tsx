@@ -40,9 +40,15 @@ export default function AccordionTeam({ teamName, countryCode, total, collected,
         </View>
 
         <View style={styles.headerRight}>
-          <View style={[styles.progressBarBg, { backgroundColor: colors.border }]}>
-            <View style={[styles.progressBarFill, { width: `${percentage}%`, backgroundColor: isComplete ? colors.success : colors.primary }]} />
+          <View style={styles.percentageContainer}>
+            <Text style={[styles.percentageText, { color: isComplete ? colors.success : colors.primary }]}>
+              {percentage.toFixed(0)}%
+            </Text>
+            <View style={[styles.progressBarBg, { backgroundColor: colors.border }]}>
+              <View style={[styles.progressBarFill, { width: `${percentage}%`, backgroundColor: isComplete ? colors.success : colors.primary }]} />
+            </View>
           </View>
+          {isComplete && <Text style={styles.completeIcon}>✅</Text>}
           <Ionicons 
             name={expanded ? "chevron-up" : "chevron-down"} 
             size={24} 
@@ -118,5 +124,16 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 8,
     borderTopWidth: 1,
-  }
+  },
+  percentageContainer: {
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  percentageText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  completeIcon: {
+    fontSize: 16,
+  },
 });

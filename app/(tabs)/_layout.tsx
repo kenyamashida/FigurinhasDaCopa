@@ -59,11 +59,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="chat/index"
+        name="raridade/index"
         options={{
-          title: 'Mensagens',
-          tabBarLabel: 'Chat',
-          tabBarIcon: ({ color, size }) => <Ionicons name="chatbubbles-outline" size={size} color={color} />,
+          title: 'Raridade',
+          tabBarLabel: 'Raridade',
+          tabBarIcon: ({ color, size }) => <Ionicons name="diamond-outline" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -83,6 +83,13 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="chat/[matchId]"
+        options={{
+          href: null,
+          title: 'Chat',
+        }}
+      />
+      <Tabs.Screen
+        name="chat/index"
         options={{
           href: null,
           title: 'Chat',

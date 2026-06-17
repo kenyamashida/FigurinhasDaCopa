@@ -8,13 +8,14 @@ import { supabase } from '../../../lib/supabase';
 import StickerDetailModal from '../../../components/StickerDetailModal';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../hooks/useTheme';
-import SkeletonCard from '../../../components/SkeletonCard';
-import ConfettiOverlay from '../../../components/ConfettiOverlay';
+import AccordionTeam from '../../../components/AccordionTeam';
+import { ScrollView } from 'react-native';
+import { Image } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const COLUMN_COUNT = 4;
 const PADDING = 16;
-const CARD_WIDTH = (width - PADDING * 2 - (COLUMN_COUNT - 1) * 8) / COLUMN_COUNT;
+const CARD_WIDTH = (width - 32 - (COLUMN_COUNT - 1) * 8) / COLUMN_COUNT;
 
 export default function AlbumScreen() {
   const router = useRouter();
@@ -76,14 +77,50 @@ export default function AlbumScreen() {
     });
   }, [catalogo, mapInventario, searchQuery, filterType]);
 
-  const renderSticker = ({ item }: { item: any }) => {
+  const groupedCatalogo = useMemo(() => {
+    const groups: Record<string, { teamName: string; countryCode: string; stickers: any[]; total: number; collected: number }> = {};
+    
+    filteredCatalogo.forEach((item: any) => {
+      if (!groups[item.selecao]) {
+        groups[item.selecao] = {
+          teamName: item.selecao,
+          countryCode: item.country_code || 'un',
+          stickers: [],
+          total: 0,
+          collected: 0,
+        };
+      }
+      
+      const status = mapInventario.get(item.codigo);
+      const isColada = status?.quantidade_colada > 0;
+      
+      groups[item.selecao].stickers.push(item);
+      groups[item.selecao].total++;
+      if (isColada) {
+        groups[item.selecao].collected++;
+      }
+    });
+    
+    return Object.values(groups);
+  }, [filteredCatalogo, mapInventario]);
+
+  const renderSticker = (item: any) => {
     const isEspecial = item.tipo === 'especial';
     const status = mapInventario.get(item.codigo);
     const isColada = status?.quantidade_colada > 0;
     const qtdRepetida = status?.quantidade_repetida || 0;
     
+    // Define a imagem da figurinha
+    let imageUrl = '';
+    if (item.tipo === 'escudo' || item.tipo === 'time' || item.posicao_campo === 'Especial') {
+      imageUrl = `https://flagcdn.com/w160/${item.country_code || 'un'}.png`;
+    } else {
+      // Usa uma API de avatares com as iniciais do jogador para simular uma foto
+      imageUrl = `https://ui-avatars.com/api/?name=${item.nome_jogador.replace(/ /g, '+')}&background=random&color=fff&size=128`;
+    }
+    
     return (
-      <View style={styles.cardContainer}>
+      <View style={styles.cardContainer} key={item.codigo}>
         <TouchableOpacity 
           style={[
             styles.card, 
@@ -98,17 +135,26 @@ export default function AlbumScreen() {
         >
           <Text style={[styles.cardCode, isColada ? styles.textColada : styles.textFaltante]}>{item.codigo}</Text>
           <View style={[styles.imagePlaceholder, isColada ? styles.bgColada : styles.bgFaltante]}>
-            <Text style={[styles.placeholderText, isColada ? styles.textColada : styles.textFaltante]} numberOfLines={2}>
-              {item.nome_jogador}
-            </Text>
+            <Image 
+              source={{ uri: imageUrl }} 
+              style={[styles.stickerImage, { opacity: isColada ? 1 : 0.2 }]} 
+              resizeMode="cover" 
+            />
+            {!isColada && (
+              <View style={styles.missingOverlay}>
+                <Ionicons name="lock-closed" size={16} color="rgba(0,0,0,0.3)" />
+              </View>
+            )}
           </View>
+          <Text style={[styles.playerName, isColada ? styles.textColada : styles.textFaltante]} numberOfLines={1}>
+            {item.nome_jogador}
+          </Text>
           {qtdRepetida > 0 && (
             <View style={styles.badgeRepetida}>
               <Text style={styles.badgeText}>+{qtdRepetida}</Text>
             </View>
           )}
         </TouchableOpacity>
-        <Text style={styles.playerName} numberOfLines={1}>{item.selecao}</Text>
       </View>
     );
   };
@@ -199,14 +245,25 @@ export default function AlbumScreen() {
         </View>
       </View>
 
-      <FlashList
-        data={filteredCatalogo}
-        renderItem={renderSticker}
-        estimatedItemSize={120}
-        numColumns={COLUMN_COUNT}
-        contentContainerStyle={styles.listContainer}
-        extraData={mapInventario} // Força re-render quando inventário mudar
-      />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {groupedCatalogo.length === 0 ? (
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Nenhuma figurinha encontrada.</Text>
+        ) : (
+          groupedCatalogo.map((group) => (
+            <AccordionTeam 
+              key={group.teamName}
+              teamName={group.teamName}
+              countryCode={group.countryCode}
+              total={group.total}
+              collected={group.collected}
+            >
+              <View style={styles.stickerGrid}>
+                {group.stickers.map((item) => renderSticker(item))}
+              </View>
+            </AccordionTeam>
+          ))
+        )}
+      </ScrollView>
 
       <StickerDetailModal
         visible={modalVisible}
@@ -265,9 +322,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  listContainer: {
-    padding: PADDING,
+  scrollContainer: {
+    paddingVertical: 16,
     paddingBottom: 80,
+  },
+  stickerGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    gap: 8,
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 32,
+    fontSize: 16,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -357,28 +425,35 @@ const styles = StyleSheet.create({
     marginTop: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 2,
+    overflow: 'hidden',
+  },
+  stickerImage: {
+    width: '100%',
+    height: '100%',
+  },
+  missingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   bgColada: {
     backgroundColor: '#E61D25',
   },
   bgFaltante: {
-    backgroundColor: '#D1E3F8',
+    backgroundColor: '#E0E0E0',
   },
   textColada: {
     color: '#0A2540',
   },
   textFaltante: {
-    color: '#666',
-  },
-  placeholderText: {
-    fontSize: 8,
-    textAlign: 'center',
+    color: '#999',
   },
   playerName: {
-    fontSize: 10,
+    fontSize: 8,
+    textAlign: 'center',
     marginTop: 4,
-    color: '#666',
+    fontWeight: '600',
   },
   badgeRepetida: {
     position: 'absolute',

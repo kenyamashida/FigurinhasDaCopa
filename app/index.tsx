@@ -25,6 +25,15 @@ export default function Index() {
       
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
+      
+      // DEBUg: Se tivermos um erro na URL, não vamos redirecionar ainda
+      if (Platform.OS === 'web' && window.location.hash.includes('error_description')) {
+        const params = new URLSearchParams(window.location.hash.replace('#', '?'));
+        alert('Erro do Supabase: ' + params.get('error_description'));
+        // Mantem loading para não redirecionar
+        return; 
+      }
+      
       setLoading(false);
     };
 

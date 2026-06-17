@@ -1,32 +1,40 @@
 import { useState, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
-import Constants from 'expo-constants';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+// Importação condicional - expo-notifications não funciona na web
+let Notifications: any = null;
+let Device: any = null;
+let Constants: any = null;
+
+if (Platform.OS !== 'web') {
+  Notifications = require('expo-notifications');
+  Device = require('expo-device');
+  Constants = require('expo-constants').default;
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+}
 
 export function usePushNotifications() {
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
-    undefined
-  );
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
+  const [notification, setNotification] = useState<any>(undefined);
+  const notificationListener = useRef<any>();
+  const responseListener = useRef<any>();
 
   useEffect(() => {
+    // Não rodar na web
+    if (Platform.OS === 'web' || !Notifications) return;
+
     registerForPushNotificationsAsync()
       .then(async (token) => {
         if (token) {
           setExpoPushToken(token);
-          // Salva o token no perfil do usuário no Supabase
           const { data: user } = await supabase.auth.getUser();
           if (user?.user) {
             await supabase.from('profiles').update({ push_token: token }).eq('id', user.user.id);
@@ -35,19 +43,21 @@ export function usePushNotifications() {
       })
       .catch((error: any) => setExpoPushToken(`${error}`));
 
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      setNotification(notification);
+    notificationListener.current = Notifications.addNotificationReceivedListener((n: any) => {
+      setNotification(n);
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response: any) => {
       console.log(response);
     });
 
     return () => {
-      notificationListener.current &&
+      if (notificationListener.current) {
         Notifications.removeNotificationSubscription(notificationListener.current);
-      responseListener.current &&
+      }
+      if (responseListener.current) {
         Notifications.removeNotificationSubscription(responseListener.current);
+      }
     };
   }, []);
 
@@ -55,6 +65,8 @@ export function usePushNotifications() {
 }
 
 async function registerForPushNotificationsAsync() {
+  if (Platform.OS === 'web' || !Notifications || !Device) return;
+
   let token;
 
   if (Platform.OS === 'android') {
@@ -79,7 +91,7 @@ async function registerForPushNotificationsAsync() {
     }
     token = (
       await Notifications.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig?.extra?.eas?.projectId || 'your-project-id',
+        projectId: Constants?.expoConfig?.extra?.eas?.projectId || 'your-project-id',
       })
     ).data;
   } else {
@@ -88,3 +100,4 @@ async function registerForPushNotificationsAsync() {
 
   return token;
 }
+

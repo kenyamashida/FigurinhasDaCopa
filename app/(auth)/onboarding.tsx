@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
@@ -32,7 +32,11 @@ export default function OnboardingScreen() {
     if (currentIndex < SLIDES.length - 1) {
       scrollRef.current?.scrollTo({ x: width * (currentIndex + 1), animated: true });
     } else {
-      await SecureStore.setItemAsync('has_seen_onboarding', 'true');
+      if (Platform.OS === 'web') {
+        if (typeof window !== 'undefined') window.localStorage.setItem('has_seen_onboarding', 'true');
+      } else {
+        await SecureStore.setItemAsync('has_seen_onboarding', 'true');
+      }
       router.replace('/(auth)/login');
     }
   };

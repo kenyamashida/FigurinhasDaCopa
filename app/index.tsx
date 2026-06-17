@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 export default function Index() {
@@ -11,8 +11,17 @@ export default function Index() {
 
   useEffect(() => {
     const checkState = async () => {
-      const hasSeen = await SecureStore.getItemAsync('has_seen_onboarding');
-      setSeenOnboarding(hasSeen === 'true');
+      try {
+        let hasSeen = null;
+        if (Platform.OS === 'web') {
+          hasSeen = typeof window !== 'undefined' ? window.localStorage.getItem('has_seen_onboarding') : null;
+        } else {
+          hasSeen = await SecureStore.getItemAsync('has_seen_onboarding');
+        }
+        setSeenOnboarding(hasSeen === 'true');
+      } catch (e) {
+        console.warn('Erro ao ler has_seen_onboarding', e);
+      }
       
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);

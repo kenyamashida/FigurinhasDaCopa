@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ActivityIndicator, Share, Alert, TextInput } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ActivityIndicator, Share, Alert, TextInput, ScrollView, Image } from 'react-native';
 import catalogo from '../../../data/catalogo-figurinhas.json';
 import { useAlbum } from '../../../hooks/useAlbum';
 import { useRouter } from 'expo-router';
@@ -9,8 +8,8 @@ import StickerDetailModal from '../../../components/StickerDetailModal';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../hooks/useTheme';
 import AccordionTeam from '../../../components/AccordionTeam';
-import { ScrollView } from 'react-native';
-import { Image } from 'react-native';
+import SkeletonCard from '../../../components/SkeletonCard';
+import ConfettiOverlay from '../../../components/ConfettiOverlay';
 
 const { width } = Dimensions.get('window');
 const COLUMN_COUNT = 4;
@@ -20,7 +19,7 @@ const CARD_WIDTH = (width - 32 - (COLUMN_COUNT - 1) * 8) / COLUMN_COUNT;
 export default function AlbumScreen() {
   const router = useRouter();
   const { inventario, isLoading, toggleSticker } = useAlbum();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('Todas'); // Todas, Tenho, Faltam, Repetidas
@@ -162,7 +161,7 @@ export default function AlbumScreen() {
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: 16 }]}>
-        <View style={styles.listContainer}>
+        <View style={styles.scrollContainer}>
           <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
             {Array.from({ length: 12 }).map((_, i) => (
               <SkeletonCard key={i} width={CARD_WIDTH} height={CARD_WIDTH * 1.4} />

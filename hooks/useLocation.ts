@@ -1,33 +1,37 @@
 import { useState, useEffect } from 'react';
-import * as Location from 'expo-location';
+import { Platform } from 'react-native';
 import { supabase } from '../lib/supabase';
-import { Alert } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 
 export function useLocation() {
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [location, setLocation] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    let subscription: Location.LocationSubscription | null = null;
+    // expo-location não funciona corretamente na web
+    if (Platform.OS === 'web') {
+      setErrorMsg('Localização não disponível na versão web.');
+      return;
+    }
+
+    let subscription: any = null;
 
     const startWatching = async () => {
+      const Location = require('expo-location');
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permissão para acessar a localização foi negada.');
         return;
       }
 
-      // Inicia o rastreamento em background/foreground contínuo
       subscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Balanced,
-          distanceInterval: 50, // Atualiza a cada 50 metros
+          distanceInterval: 50,
         },
-        async (newLocation) => {
+        async (newLocation: any) => {
           setLocation(newLocation);
           
-          // Sincronizando com o Supabase para atualizar nossa posição no mapa de trocas
           const { data: user } = await supabase.auth.getUser();
           if (user?.user) {
             await supabase
@@ -52,47 +56,43 @@ export function useLocation() {
     };
   }, []);
 
-  // Fetching de usuários próximos num raio (ex: 5km = 5000 metros)
   const { data: nearbyUsers, isLoading: isLoadingNearby } = useQuery({
     queryKey: ['nearby_users', location?.coords.latitude, location?.coords.longitude],
     queryFn: async () => {
       if (!location) return [];
-
       const { data, error } = await supabase.rpc('get_nearby_users', {
         user_lat: location.coords.latitude,
         user_lng: location.coords.longitude,
         radius_meters: 5000,
       });
-
       if (error) {
         console.error("Erro ao buscar usuários próximos:", error);
         return [];
       }
       return data;
     },
-    enabled: !!location, // Só executa se tiver localização
-    refetchInterval: 30000, // Atualiza a cada 30 segundos
+    enabled: !!location && Platform.OS !== 'web',
+    refetchInterval: 30000,
   });
 
   const { data: tradePoints } = useQuery({
     queryKey: ['trade_points', location?.coords.latitude, location?.coords.longitude],
     queryFn: async () => {
       if (!location) return [];
-
       const { data, error } = await supabase.rpc('get_nearby_trade_points', {
         user_lat: location.coords.latitude,
         user_lng: location.coords.longitude,
-        radius_meters: 15000, // Raio maior de 15km para pontos fixos
+        radius_meters: 15000,
       });
-
       if (error) {
         console.error("Erro ao buscar trade points:", error);
         return [];
       }
       return data;
     },
-    enabled: !!location,
+    enabled: !!location && Platform.OS !== 'web',
   });
 
   return { location, errorMsg, nearbyUsers, isLoadingNearby, tradePoints };
 }
+

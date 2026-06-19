@@ -1,28 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Platform } from 'react-native';
 import { Link, router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
-import { useEffect } from 'react';
 import * as Linking from 'expo-linking';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const hash = window.location.hash;
-      const search = window.location.search;
-      if (hash.includes('error_description')) {
-        const params = new URLSearchParams(hash.replace('#', '?'));
-        Alert.alert('Erro de Auth (Hash)', params.get('error_description') || 'Erro desconhecido');
-      } else if (search.includes('error_description')) {
-        const params = new URLSearchParams(search);
-        Alert.alert('Erro de Auth (Search)', params.get('error_description') || 'Erro desconhecido');
-      }
-    }
-  }, []);
 
   async function signInWithEmail() {
     setLoading(true);

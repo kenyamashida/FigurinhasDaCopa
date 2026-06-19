@@ -1,16 +1,42 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Dimensions, Platform } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, withSequence } from 'react-native-reanimated';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
 import { useAlbum } from '../../../hooks/useAlbum';
 import catalogo from '../../../data/catalogo-figurinhas.json';
 
+// expo-camera não funciona na web — importação condicional
+let CameraView: any = null;
+let useCameraPermissions: any = null;
+if (Platform.OS !== 'web') {
+  const cam = require('expo-camera');
+  CameraView = cam.CameraView;
+  useCameraPermissions = cam.useCameraPermissions;
+}
+
 export default function ScannerScreen() {
-  const [permission, requestPermission] = useCameraPermissions();
-  const [scanning, setScanning] = useState(false);
   const router = useRouter();
   const { toggleSticker } = useAlbum();
+
+  // Na web, câmera não é suportada
+  if (Platform.OS === 'web') {
+    return (
+      <View style={styles.center}>
+        <Text style={{ fontSize: 48, marginBottom: 16 }}>📷</Text>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 }}>
+          Scanner não disponível na Web
+        </Text>
+        <Text style={{ fontSize: 14, color: '#666', textAlign: 'center', marginBottom: 24 }}>
+          Utilize o aplicativo no seu celular para escanear figurinhas.
+        </Text>
+        <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+          <Text style={styles.buttonText}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const [permission, requestPermission] = useCameraPermissions();
 
   // Animated line for scanning effect
   const translateY = useSharedValue(0);

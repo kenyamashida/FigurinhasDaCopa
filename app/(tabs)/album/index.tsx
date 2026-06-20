@@ -109,10 +109,14 @@ export default function AlbumScreen() {
     const isColada = status?.quantidade_colada > 0;
     const qtdRepetida = status?.quantidade_repetida || 0;
     
-    // Define a imagem da figurinha
     let imageUrl = '';
+    let isFifaLogo = false;
     if (item.tipo === 'escudo' || item.tipo === 'time' || item.posicao_campo === 'Especial') {
-      imageUrl = `https://flagcdn.com/w160/${item.country_code || 'un'}.png`;
+      if (!item.country_code || item.country_code === 'un') {
+        isFifaLogo = true;
+      } else {
+        imageUrl = `https://flagcdn.com/w160/${item.country_code}.png`;
+      }
     } else {
       // Usa uma API de avatares com as iniciais do jogador para simular uma foto
       imageUrl = `https://ui-avatars.com/api/?name=${item.nome_jogador.replace(/ /g, '+')}&background=random&color=fff&size=128`;
@@ -135,9 +139,9 @@ export default function AlbumScreen() {
           <Text style={[styles.cardCode, isColada ? styles.textColada : styles.textFaltante]}>{item.codigo}</Text>
           <View style={[styles.imagePlaceholder, isColada ? styles.bgColada : styles.bgFaltante]}>
             <Image 
-              source={{ uri: imageUrl }} 
+              source={isFifaLogo ? require('../../../assets/images/fifa-logo.png') : { uri: imageUrl }} 
               style={[styles.stickerImage, { opacity: isColada ? 1 : 0.2 }]} 
-              resizeMode="cover" 
+              resizeMode={isFifaLogo ? "contain" : "cover"} 
             />
             {!isColada && (
               <View style={styles.missingOverlay}>

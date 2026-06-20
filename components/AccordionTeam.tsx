@@ -27,9 +27,9 @@ export default function AccordionTeam({ teamName, countryCode, total, collected,
       >
         <View style={styles.headerLeft}>
           <Image 
-            source={{ uri: `https://flagcdn.com/w80/${countryCode}.png` }} 
-            style={styles.flag} 
-            resizeMode="cover"
+            source={countryCode === 'un' ? require('../../assets/images/fifa-logo.png') : { uri: `https://flagcdn.com/w80/${countryCode}.png` }} 
+            style={[styles.flag, countryCode === 'un' && { borderWidth: 0, backgroundColor: 'transparent' }]} 
+            resizeMode={countryCode === 'un' ? "contain" : "cover"}
           />
           <View>
             <Text style={[styles.teamName, { color: colors.text }]}>{teamName}</Text>

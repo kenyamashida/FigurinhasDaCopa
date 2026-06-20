@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator, Image } from 'react-native';
 import { useAlbum } from '../hooks/useAlbum';
 import { useTheme } from '../hooks/useTheme';
 import { useRaridade } from '../hooks/useRaridade';
 import { useWishlist } from '../hooks/useWishlist';
+import { Ionicons } from '@expo/vector-icons';
 
 interface StickerDetailModalProps {
   visible: boolean;
@@ -39,6 +40,14 @@ export default function StickerDetailModal({ visible, onClose, sticker, status }
     setUpdating(false);
   };
 
+  // Define a imagem da figurinha
+  let imageUrl = '';
+  if (sticker.tipo === 'escudo' || sticker.tipo === 'time' || sticker.posicao_campo === 'Especial') {
+    imageUrl = (!sticker.country_code || sticker.country_code === 'un') ? 'https://upload.wikimedia.org/wikipedia/en/thumb/4/4b/2026_FIFA_World_Cup_logo.svg/512px-2026_FIFA_World_Cup_logo.svg.png' : `https://flagcdn.com/w160/${sticker.country_code}.png`;
+  } else {
+    imageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(sticker.nome_jogador)}&background=random&color=fff&size=128`;
+  }
+
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
@@ -50,23 +59,49 @@ export default function StickerDetailModal({ visible, onClose, sticker, status }
             </View>
             
             <View style={styles.content}>
-              <Text style={[styles.nome, { color: colors.text }]}>{sticker.nome_jogador}</Text>
-              {sticker.posicao_campo && (
-                <Text style={[styles.posicao, { color: colors.textSecondary }]}>{sticker.posicao_campo}</Text>
-              )}
-              
-              {loadingRaridade ? (
-                <ActivityIndicator size="small" color={colors.primary} style={{ marginTop: 16, alignSelf: 'flex-start' }} />
-              ) : raridade ? (
-                <View style={[styles.rarityBadge, { borderColor: raridade.e_brilhante ? colors.accent : colors.border }]}>
-                  <Text style={[styles.rarityText, { color: raridade.e_brilhante ? colors.accent : colors.text }]}>
-                    {raridade.raridade_dinamica}
-                  </Text>
-                  <Text style={[styles.raritySubtext, { color: colors.textSecondary }]}>
-                    {raridade.total_usuarios_com_figurinha} usuários têm essa
-                  </Text>
+              <View style={styles.stickerPreviewRow}>
+                {/* Visualização da Figurinha */}
+                <View style={[
+                  styles.stickerPreviewCard,
+                  isColada ? styles.previewColada : styles.previewFaltante,
+                  sticker.tipo === 'especial' && styles.previewEspecial
+                ]}>
+                  <Image 
+                    source={{ uri: imageUrl }} 
+                    style={[styles.previewImage, { opacity: isColada ? 1 : 0.2 }]} 
+                    resizeMode="cover"
+                  />
+                  {!isColada && (
+                    <View style={styles.previewLock}>
+                      <Ionicons name="lock-closed" size={24} color="rgba(0,0,0,0.3)" />
+                    </View>
+                  )}
                 </View>
-              ) : null}
+
+                {/* Dados do Jogador */}
+                <View style={styles.stickerInfoCol}>
+                  <Text style={[styles.nome, { color: colors.text }]}>{sticker.nome_jogador}</Text>
+                  {sticker.posicao_campo && (
+                    <Text style={[styles.posicao, { color: colors.textSecondary }]}>{sticker.posicao_campo}</Text>
+                  )}
+                  {sticker.grupo && (
+                    <Text style={[styles.grupoText, { color: colors.textSecondary }]}>Grupo {sticker.grupo}</Text>
+                  )}
+                  
+                  {loadingRaridade ? (
+                    <ActivityIndicator size="small" color={colors.primary} style={{ marginTop: 8, alignSelf: 'flex-start' }} />
+                  ) : raridade ? (
+                    <View style={[styles.rarityBadge, { borderColor: raridade.e_brilhante ? colors.accent : colors.border }]}>
+                      <Text style={[styles.rarityText, { color: raridade.e_brilhante ? colors.accent : colors.text }]}>
+                        {raridade.raridade_dinamica}
+                      </Text>
+                      <Text style={[styles.raritySubtext, { color: colors.textSecondary }]}>
+                        {raridade.total_usuarios_com_figurinha} colecionadores têm
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
+              </View>
             </View>
 
             <View style={styles.actions}>
@@ -259,18 +294,72 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   rarityBadge: {
-    marginTop: 16,
-    padding: 12,
+    marginTop: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 6,
     alignSelf: 'flex-start',
   },
   rarityText: {
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 12,
   },
   raritySubtext: {
+    fontSize: 10,
+    marginTop: 2,
+  },
+  stickerPreviewRow: {
+    flexDirection: 'row',
+    gap: 16,
+    alignItems: 'center',
+  },
+  stickerPreviewCard: {
+    width: 90,
+    height: 126,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#D1E3F8',
+    padding: 4,
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  previewColada: {
+    borderColor: '#0A2540',
+    borderWidth: 2,
+  },
+  previewFaltante: {
+    opacity: 0.7,
+  },
+  previewEspecial: {
+    borderColor: '#F1C40F',
+    borderWidth: 2,
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 4,
+  },
+  previewLock: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stickerInfoCol: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  grupoText: {
     fontSize: 12,
+    fontWeight: '600',
     marginTop: 4,
   }
 });

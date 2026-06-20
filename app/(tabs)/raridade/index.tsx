@@ -76,10 +76,15 @@ export default function RaridadeScreen() {
     const { raridade, isColada, totalDonos } = item;
 
     let imageUrl = '';
+    let isFifaLogo = false;
     if (item.tipo === 'escudo' || item.tipo === 'time' || item.posicao_campo === 'Especial') {
-      imageUrl = `https://flagcdn.com/w160/${item.country_code || 'un'}.png`;
+      if (!item.country_code || item.country_code === 'un') {
+        isFifaLogo = true;
+      } else {
+        imageUrl = `https://flagcdn.com/w160/${item.country_code}.png`;
+      }
     } else {
-      imageUrl = `https://ui-avatars.com/api/?name=${item.nome_jogador.replace(/ /g, '+')}&background=random&color=fff&size=128`;
+      imageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.nome_jogador)}&background=random&color=fff&size=128`;
     }
 
     return (
@@ -99,9 +104,9 @@ export default function RaridadeScreen() {
 
         {/* Imagem */}
         <Image
-          source={{ uri: imageUrl }}
+          source={isFifaLogo ? require('../../../assets/images/fifa-logo.png') : { uri: imageUrl }}
           style={[styles.thumb, { opacity: isColada ? 1 : 0.3 }]}
-          resizeMode="cover"
+          resizeMode={isFifaLogo ? "contain" : "cover"}
         />
 
         {/* Info */}

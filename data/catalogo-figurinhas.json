@@ -10,7 +10,8 @@
     "raridade_calculada": "Lendária",
     "numero_no_album": 1,
     "country_code": "un",
-    "raridade_valor": 5
+    "raridade_valor": 5,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/FIFA_World_Cup_Trophy_%28Ank_Kumar%2C_Infosys_Limited%29_04.jpg/330px-FIFA_World_Cup_Trophy_%28Ank_Kumar%2C_Infosys_Limited%29_04.jpg"
   },
   {
     "codigo": "FWC-01",
@@ -36,7 +37,8 @@
     "raridade_calculada": "Lendária",
     "numero_no_album": 3,
     "country_code": "un",
-    "raridade_valor": 5
+    "raridade_valor": 5,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Vista_a%C3%A9rea_del_Estadio_Azteca_-_2026_-_02.jpg/330px-Vista_a%C3%A9rea_del_Estadio_Azteca_-_2026_-_02.jpg"
   },
   {
     "codigo": "FWC-03",
@@ -49,7 +51,8 @@
     "raridade_calculada": "Lendária",
     "numero_no_album": 4,
     "country_code": "un",
-    "raridade_valor": 5
+    "raridade_valor": 5,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Metlife_stadium_%28Aerial_view%29.jpg/330px-Metlife_stadium_%28Aerial_view%29.jpg"
   },
   {
     "codigo": "FWC-04",
@@ -62,7 +65,8 @@
     "raridade_calculada": "Lendária",
     "numero_no_album": 5,
     "country_code": "un",
-    "raridade_valor": 5
+    "raridade_valor": 5,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Arlington_June_2020_4_%28AT%26T_Stadium%29.jpg/330px-Arlington_June_2020_4_%28AT%26T_Stadium%29.jpg"
   },
   {
     "codigo": "FWC-05",
@@ -75,7 +79,8 @@
     "raridade_calculada": "Rara",
     "numero_no_album": 6,
     "country_code": "un",
-    "raridade_valor": 3
+    "raridade_valor": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Aerial_view_of_Arrowhead_Stadium_08-31-2013.jpg/330px-Aerial_view_of_Arrowhead_Stadium_08-31-2013.jpg"
   },
   {
     "codigo": "FWC-06",
@@ -88,7 +93,8 @@
     "raridade_calculada": "Rara",
     "numero_no_album": 7,
     "country_code": "un",
-    "raridade_valor": 3
+    "raridade_valor": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Mercedes_Benz_Stadium_time_lapse_capture_2017-08-13.jpg/330px-Mercedes_Benz_Stadium_time_lapse_capture_2017-08-13.jpg"
   },
   {
     "codigo": "FWC-07",
@@ -101,7 +107,8 @@
     "raridade_calculada": "Rara",
     "numero_no_album": 8,
     "country_code": "un",
-    "raridade_valor": 3
+    "raridade_valor": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Gillette_Stadium_%28Top_View%29.jpg/330px-Gillette_Stadium_%28Top_View%29.jpg"
   },
   {
     "codigo": "FWC-08",
@@ -114,7 +121,8 @@
     "raridade_calculada": "Rara",
     "numero_no_album": 9,
     "country_code": "un",
-    "raridade_valor": 3
+    "raridade_valor": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Nrg_stadium.jpg/330px-Nrg_stadium.jpg"
   },
   {
     "codigo": "FWC-09",
@@ -127,7 +135,8 @@
     "raridade_calculada": "Rara",
     "numero_no_album": 10,
     "country_code": "un",
-    "raridade_valor": 3
+    "raridade_valor": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/SoFi_Stadium_2023.jpg/330px-SoFi_Stadium_2023.jpg"
   },
   {
     "codigo": "FWC-10",

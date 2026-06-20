@@ -42,8 +42,16 @@ export default function StickerDetailModal({ visible, onClose, sticker, status }
 
   // Define a imagem da figurinha
   let imageUrl = '';
-  if (sticker.tipo === 'escudo' || sticker.tipo === 'time' || sticker.posicao_campo === 'Especial') {
-    imageUrl = (!sticker.country_code || sticker.country_code === 'un') ? 'https://upload.wikimedia.org/wikipedia/en/thumb/4/4b/2026_FIFA_World_Cup_logo.svg/512px-2026_FIFA_World_Cup_logo.svg.png' : `https://flagcdn.com/w160/${sticker.country_code}.png`;
+  let isFifaLogo = false;
+
+  if (sticker.image_url) {
+    imageUrl = sticker.image_url;
+  } else if (sticker.tipo === 'escudo' || sticker.tipo === 'time' || sticker.posicao_campo === 'Especial') {
+    if (!sticker.country_code || sticker.country_code === 'un') {
+      isFifaLogo = true;
+    } else {
+      imageUrl = `https://flagcdn.com/w160/${sticker.country_code}.png`;
+    }
   } else {
     imageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(sticker.nome_jogador)}&background=random&color=fff&size=128`;
   }
@@ -67,9 +75,9 @@ export default function StickerDetailModal({ visible, onClose, sticker, status }
                   sticker.tipo === 'especial' && styles.previewEspecial
                 ]}>
                   <Image 
-                    source={{ uri: imageUrl }} 
+                    source={isFifaLogo ? require('../assets/images/fifa-logo.png') : { uri: imageUrl }} 
                     style={[styles.previewImage, { opacity: isColada ? 1 : 0.2 }]} 
-                    resizeMode="cover"
+                    resizeMode={isFifaLogo ? "contain" : "cover"}
                   />
                   {!isColada && (
                     <View style={styles.previewLock}>
